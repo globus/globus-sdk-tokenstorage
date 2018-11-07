@@ -24,23 +24,25 @@ You can then import helpers from ``globus_sdk_tokenstorage``. For example:
         # ... do a login low, getting back initial tokens
         # elided for simplicity here
         token_response = ...
-        # now store the tokens, and pull out the tokens for the resource server
-        # we want
+        # now store the tokens, and pull out the tokens for the
+        # resource server we want
         my_file_adapter.store(token_response)
         by_rs = token_response.by_resource_server
         tokens = by_rs['transfer.api.globus.org']
     else:
-        # otherwise, we already did this whole song-and-dance, so just load the
-        # tokens from that file
+        # otherwise, we already did this whole song-and-dance, so just
+        # load the tokens from that file
         tokens = my_file_adapter.read_as_dict()
 
 
     # RereshTokenAuthorizer and ClientCredentialsAuthorizer both use
-    # `on_refresh` callbacks -- this feature is therefore only relevant for
-    # those auth types
-    # auth_client is the internal auth client used for refreshes, which was
-    # used in the login flow
-    # note that this is all normal SDK usage
+    # `on_refresh` callbacks
+    # this feature is therefore only relevant for those auth types
+    #
+    # auth_client is the internal auth client used for refreshes,
+    # and which was used in the login flow
+    # note that this is all normal SDK usage wherein my_file_adapter
+    # is providing the on_refresh callback
     auth_client = ...
     authorizer = globus_sdk.RefreshTokenAuthorizer(
         tokens['refresh_token'], auth_client,
