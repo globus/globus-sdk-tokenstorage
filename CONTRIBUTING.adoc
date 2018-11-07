@@ -1,0 +1,8 @@
+Contributing
+============
+
+This project follows the standards of the Globus SDK:
+
+- black, isort, flake8 for autoformatting and linting
+
+- quality commit messages and cleanly merging PRs
