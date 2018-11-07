@@ -3,6 +3,8 @@
 PYTHON_VERSION?=python3
 VIRTUALENV=.venv
 
+RELEASE_VERSION=$(shell cat globus_sdk_tokenstorage/version.py | grep '^__version__' | cut -d '"' -f2)
+
 .PHONY: docs test autoformat clean
 
 $(VIRTUALENV):
@@ -19,6 +21,11 @@ test: $(VIRTUALENV)
 	$(VIRTUALENV)/bin/tox
 docs: $(VIRTUALENV)
 	$(VIRTUALENV)/bin/tox -e docs
+release:
+	rm -rf dist
+	git tag -s "$(RELEASE_VERSION)"
+	$(VIRTUALENV)/bin/python setup.py sdist bdist_wheel
+	$(VIRTUALENV)/bin/twine upload dist/*
 
 clean:
 	rm -rf $(VIRTUALENV) dist build *.egg-info .tox

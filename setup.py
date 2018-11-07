@@ -36,12 +36,15 @@ setup(
             # not just py2: py3 versions of mock don't all have the same
             # interface!
             'mock==2.0.0;python_version<"3.6"',
+            # builds + uploads to pypi
+            "twine==1.12.1",
+            "wheel==0.32.2",
             # docs
             "sphinx==1.8.1",
         ]
     },
     include_package_data=True,
-    keywords=["globus"],
+    keywords=["globus", "sdk", "contrib"],
     classifiers=[
         "Development Status :: 3 - Alpha",
         "Intended Audience :: Developers",
