@@ -14,6 +14,9 @@ except ImportError:
     from unittest import mock
 
 
+IS_WINDOWS = os.name == "nt"
+
+
 @pytest.fixture
 def tempdir():
     d = tempfile.mkdtemp()
@@ -95,12 +98,19 @@ def test_store(filename, mock_response):
     assert not adapter.file_exists()
     adapter.store(mock_response)
 
-    # mode|0600 should be 0600 -- meaning that those are the maximal
-    # permissions given
-    st_mode = os.stat(filename).st_mode & 0o777  # & 777 to remove extra bits
-    assert st_mode | 0o600 == 0o600
-
     with open(filename, "r") as f:
         data = json.load(f)
     assert data["globus-sdk-tokenstorage.version"] == __version__
     assert data["access_token"] == "access_token_1"
+
+
+@pytest.mark.xfail(IS_WINDOWS, reason="cannot set umask perms on Windows")
+def test_store_perms(filename, mock_response):
+    adapter = SimpleJSONFileAdapter(filename, resource_server="resource_server_1")
+    assert not adapter.file_exists()
+    adapter.store(mock_response)
+
+    # mode|0600 should be 0600 -- meaning that those are the maximal
+    # permissions given
+    st_mode = os.stat(filename).st_mode & 0o777  # & 777 to remove extra bits
+    assert st_mode | 0o600 == 0o600

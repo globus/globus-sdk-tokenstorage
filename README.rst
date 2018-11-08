@@ -1,6 +1,6 @@
 .. image:: https://travis-ci.org/sirosen/globus-sdk-tokenstorage.svg?branch=master
     :alt: build status
-    :target: https://travis-ci.org/globus/globus-sdk-tokenstorage
+    :target: https://travis-ci.org/sirosen/globus-sdk-tokenstorage
 
 .. image:: https://img.shields.io/pypi/v/globus-sdk-tokenstorage.svg
     :alt: Latest Released Version
