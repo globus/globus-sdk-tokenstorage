@@ -5,13 +5,12 @@ import tempfile
 import time
 
 import pytest
-
 from globus_sdk_tokenstorage import SimpleJSONFileAdapter, __version__
 
 try:
     import mock
 except ImportError:
-    from unittest import mock
+    from unittest import mock  # type: ignore
 
 
 IS_WINDOWS = os.name == "nt"

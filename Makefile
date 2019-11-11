@@ -1,31 +1,24 @@
-# allow specification of python version for devs. Examples:
-#    make autoformat PYTHON_VERSION=python3.6
-PYTHON_VERSION?=python3
-VIRTUALENV=.venv
-
 RELEASE_VERSION=$(shell cat globus_sdk_tokenstorage/version.py | grep '^__version__' | cut -d '"' -f2)
 
-.PHONY: docs test autoformat clean
+tox:
+	@if ! which tox; then echo 'you must install tox!'; exit 1; fi
 
-$(VIRTUALENV):
-	virtualenv --python=$(PYTHON_VERSION) $(VIRTUALENV)
-	$(VIRTUALENV)/bin/pip install -U pip setuptools
-	$(VIRTUALENV)/bin/pip install -e '.[development]'
+.PHONY: test
+test: tox
+	tox
 
-# run outside of tox because specifying a tox environment for py3.6+ is awkward
-autoformat: $(VIRTUALENV)
-	$(VIRTUALENV)/bin/isort --recursive tests/ globus_sdk_tokenstorage/ setup.py
-	if [ -f "$(VIRTUALENV)/bin/black" ]; then $(VIRTUALENV)/bin/black tests/ globus_sdk_tokenstorage/ setup.py; fi
+.PHONY: lint
+lint: tox
+	tox -e lint
 
-test: $(VIRTUALENV)
-	$(VIRTUALENV)/bin/tox
-docs: $(VIRTUALENV)
-	$(VIRTUALENV)/bin/tox -e docs
-release:
-	rm -rf dist
-	git tag -s "$(RELEASE_VERSION)"
-	$(VIRTUALENV)/bin/python setup.py sdist bdist_wheel
-	$(VIRTUALENV)/bin/twine upload dist/*
+.PHONY: docs
+docs: tox
+	tox -e docs
 
+.PHONY: release
+release: tox
+	tox -e release
+
+.PHONY: clean
 clean:
-	rm -rf $(VIRTUALENV) dist build *.egg-info .tox
+	rm -rf dist build src/*.egg-info .tox

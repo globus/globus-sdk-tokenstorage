@@ -4,21 +4,22 @@ language: python
 matrix:
   include:
     - python: "2.7"
+      env: TOXENV=py27
     - python: "3.4"
+      env: TOXENV=py34
     - python: "3.5"
+      env: TOXENV=py35
     - python: "3.6"
-    # hack py37, py38 to use a different Travis worker type
-    # sudo:required gets us the VM builds where these pythons work
+      env: TOXENV=py36
     - python: "3.7"
       sudo: required
-    - python: "3.8-dev"
-      sudo: required
-    - python: "pypy"
-    - python: "pypy3"
-    - python: "nightly"
+      env: TOXENV=py37
+    - python: "3.7"
+      env: TOXENV=lint
     - os: windows
       language: sh
       python: "2.7"
+      env: TOXENV=py27
       before_install:
         - choco install python2
         - export PATH="/c/Python27:/c/Python27/Scripts:$PATH"
@@ -26,17 +27,13 @@ matrix:
     - os: windows
       language: sh
       python: "3.7"
+      env: TOXENV=py37
       before_install:
         - choco install python3
         - export PATH="/c/Python37:/c/Python37/Scripts:$PATH"
         - python -m pip install --upgrade pip wheel
-  allow_failures:
-    - python: "3.8-dev"
-    - python: "pypy"
-    - python: "pypy3"
-    - python: "nightly"
 cache: pip
 install:
-  - pip install -e '.[development]'
+  - pip install tox
 script:
-  - tox -e py  # invoke with calling python
+  - tox
