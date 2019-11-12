@@ -1,4 +1,4 @@
-RELEASE_VERSION=$(shell cat globus_sdk_tokenstorage/version.py | grep '^__version__' | cut -d '"' -f2)
+RELEASE_VERSION=$(shell cat src/globus_sdk_tokenstorage/version.py | grep '^__version__' | cut -d '"' -f2)
 
 tox:
 	@if ! which tox; then echo 'you must install tox!'; exit 1; fi
@@ -17,7 +17,7 @@ docs: tox
 
 .PHONY: release
 release: tox
-	tox -e release
+	RELEASE_VERSION=$(RELEASE_VERSION) tox -e release
 
 .PHONY: clean
 clean:
