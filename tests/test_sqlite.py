@@ -1,27 +1,7 @@
 import os
-import shutil
-import tempfile
-import time
 
 import pytest
 from globus_sdk_tokenstorage import SQLiteAdapter
-
-try:
-    import mock
-except ImportError:
-    from unittest import mock  # type: ignore
-
-
-IS_WINDOWS = os.name == "nt"
-
-MEMORY_DBNAME = ":memory:"
-
-
-@pytest.fixture
-def tempdir():
-    d = tempfile.mkdtemp()
-    yield d
-    shutil.rmtree(d)
 
 
 @pytest.fixture
@@ -29,29 +9,7 @@ def db_filename(tempdir):
     return os.path.join(tempdir, "test.db")
 
 
-@pytest.fixture
-def mock_response():
-    res = mock.Mock()
-    expiration_time = int(time.time()) + 3600
-    res.by_resource_server = {
-        "resource_server_1": {
-            "access_token": "access_token_1",
-            "expires_at_seconds": expiration_time,
-            "refresh_token": "refresh_token_1",
-            "resource_server": "resource_server_1",
-            "scope": "scope1",
-            "token_type": "bearer",
-        },
-        "resource_server_2": {
-            "access_token": "access_token_2",
-            "expires_in": expiration_time,
-            "refresh_token": "refresh_token_2",
-            "resource_server": "resource_server_2",
-            "scope": "scope2 scope2:0 scope2:1",
-            "token_type": "bearer",
-        },
-    }
-    return res
+MEMORY_DBNAME = ":memory:"
 
 
 @pytest.mark.parametrize(
@@ -135,3 +93,34 @@ def test_load_missing_config_data():
 def test_load_missing_token_data():
     adapter = SQLiteAdapter(MEMORY_DBNAME)
     assert adapter.read_as_dict() == {}
+
+
+def test_remove_tokens(mock_response):
+    adapter = SQLiteAdapter(MEMORY_DBNAME)
+    adapter.store(mock_response)
+
+    removed = adapter.remove_tokens_for_resource_server("resource_server_1")
+    assert removed
+    data = adapter.read_as_dict()
+    assert data == {
+        "resource_server_2": mock_response.by_resource_server["resource_server_2"]
+    }
+
+    removed = adapter.remove_tokens_for_resource_server("resource_server_1")
+    assert not removed
+
+
+def test_remove_config():
+    adapter = SQLiteAdapter(MEMORY_DBNAME)
+    store_val = {"val1": True, "val2": None, "val3": 1.4}
+    adapter.store_config("myconf", store_val)
+    adapter.store_config("myconf2", store_val)
+    removed = adapter.remove_config("myconf")
+    assert removed
+    read_val = adapter.read_config("myconf")
+    assert read_val is None
+    read_val = adapter.read_config("myconf2")
+    assert read_val == store_val
+
+    removed = adapter.remove_config("myconf")
+    assert not removed

@@ -111,8 +111,28 @@ SELECT config_data_json FROM config_storage WHERE namespace=? AND config_name=?
         config_data_json = row[0]
         return json.loads(config_data_json)
 
+    def remove_config(self, config_name):
+        """
+        :param config_name: A string name for the configuration value
+
+        Delete a previously stored configuration value.
+
+        Returns True if data was deleted, False if none was found to delete.
+        """
+        rowcount = self._connection.execute(
+            """
+DELETE FROM config_storage WHERE namespace=? AND config_name=?;
+            """,
+            (self.namespace, config_name),
+        ).rowcount
+        self._connection.commit()
+        return rowcount != 0
+
     def store(self, token_response):
         """
+        :param token_response: a globus_sdk.OAuthTokenResponse object containing token
+                               data to store
+
         By default, ``self.on_refresh`` is just an alias for this function.
 
         Given a token response, extract the token data for the resource servers and
@@ -151,3 +171,21 @@ SELECT resource_server, token_data_json FROM token_storage WHERE namespace=?
             resource_server, token_data_json = row
             data[resource_server] = json.loads(token_data_json)
         return data
+
+    def remove_tokens_for_resource_server(self, resource_server):
+        """
+        Given a resource server to target, delete tokens for that resource server from
+        the database (limited to the current namespace).
+        You can use this as part of a logout command implementation, loading token data
+        as a dict, and then deleting the data for each resource server.
+
+        Returns True if token data was deleted, False if none was found to delete.
+        """
+        rowcount = self._connection.execute(
+            """
+DELETE FROM token_storage WHERE namespace=? AND resource_server=?;
+            """,
+            (self.namespace, resource_server),
+        ).rowcount
+        self._connection.commit()
+        return rowcount != 0
