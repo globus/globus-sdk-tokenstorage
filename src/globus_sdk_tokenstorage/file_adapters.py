@@ -35,14 +35,42 @@ class SimpleJSONFileAdapter(AbstractFileAdapter):
     """
 
     def __init__(self, filename, resource_server=None, scopes=None):
+        self.filename = filename
+        self._set_resource_server_or_scopes(
+            resource_server=resource_server, scopes=scopes
+        )
+
+    def _set_resource_server_or_scopes(self, resource_server=None, scopes=None):
+        """
+        :param resource_server: the resource server name for tokens to look up
+                                in a token response object
+        :param scopes: a list of scope names for tokens to look up in a token
+                       response object
+
+        Set the scopes or resource server used to look up tokens in a response object.
+        Callers must pass exactly one of ``resource_server`` and ``scopes``.
+        """
         if resource_server and scopes:
             raise ValueError("cannot take both resource_server and scopes")
         elif not resource_server and not scopes:
             raise ValueError("you must pass resource_server or scopes")
-
-        self.filename = filename
         self.resource_server = resource_server
         self.scopes = scopes
+
+    def _lookup_data_from_response(self, token_response):
+        """
+        Given a token response, extract the token data for the configured
+        scopes or resource servers of this adapter
+        """
+        # extract desired data and copy as a new dict
+        if self.resource_server:
+            return dict(token_response.by_resource_server[self.resource_server])
+        elif self.scopes:
+            # NOTE: this can fail if `self.scopes` isn't for exactly one
+            # resource server, but then the failure will simply propagate up
+            return dict(token_response.by_scopes[self.scopes])
+        else:
+            raise NotImplementedError("neither resource_server nor scopes are set")
 
     def store(self, token_response):
         """
@@ -58,15 +86,7 @@ class SimpleJSONFileAdapter(AbstractFileAdapter):
         local users, this sets the umask such that only the owner of the
         resulting file can read or write it.
         """
-        # extract desired data and copy as a new dict
-        if self.resource_server:
-            to_write = dict(token_response.by_resource_server[self.resource_server])
-        elif self.scopes:
-            # NOTE: this can fail if `self.scopes` isn't for exactly one
-            # resource server, but then the failure will simply propagate up
-            to_write = dict(token_response.by_scopes[self.scopes])
-        else:
-            raise NotImplementedError("neither resource_server nor scopes are set")
+        to_write = self._lookup_data_from_response(token_response)
 
         # deny rwx to Group and World, exec to User
         old_umask = os.umask(0o177)

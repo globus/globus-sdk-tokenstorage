@@ -76,3 +76,8 @@ Full Library Contents
    :members:
    :member-order: bysource
    :show-inheritance:
+
+.. autoclass:: globus_sdk_tokenstorage.SQLiteAdapter
+   :members:
+   :member-order: bysource
+   :show-inheritance:
