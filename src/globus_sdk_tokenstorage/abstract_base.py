@@ -1,4 +1,4 @@
-class AbstractStorageAdapter(object):
+class AbstractStorageAdapter:
     def store(self, token_response):
         raise NotImplementedError
 

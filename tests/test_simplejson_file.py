@@ -57,7 +57,7 @@ def test_store(filename, mock_response):
     assert not adapter.file_exists()
     adapter.store(mock_response)
 
-    with open(filename, "r") as f:
+    with open(filename) as f:
         data = json.load(f)
     assert data["globus-sdk-tokenstorage.version"] == __version__
     assert data["access_token"] == "access_token_1"

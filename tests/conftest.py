@@ -1,13 +1,9 @@
 import shutil
 import tempfile
 import time
+from unittest import mock
 
 import pytest
-
-try:
-    import mock
-except ImportError:
-    from unittest import mock  # type: ignore
 
 
 @pytest.fixture

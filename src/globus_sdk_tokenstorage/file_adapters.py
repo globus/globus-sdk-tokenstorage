@@ -109,5 +109,5 @@ class SimpleJSONFileAdapter(AbstractFileAdapter):
         will only return the token data for the particular scopes or resource
         server for which this File Adapter is configured.
         """
-        with open(self.filename, "r") as f:
+        with open(self.filename) as f:
             return json.load(f)
