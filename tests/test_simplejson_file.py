@@ -2,6 +2,7 @@ import json
 import os
 
 import pytest
+
 from globus_sdk_tokenstorage import SimpleJSONFileAdapter, __version__
 
 IS_WINDOWS = os.name == "nt"

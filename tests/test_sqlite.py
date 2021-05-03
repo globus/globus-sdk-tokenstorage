@@ -1,6 +1,7 @@
 import os
 
 import pytest
+
 from globus_sdk_tokenstorage import SQLiteAdapter
 
 

@@ -1,6 +1,6 @@
-.. image:: https://travis-ci.org/sirosen/globus-sdk-tokenstorage.svg?branch=master
+.. image:: https://github.com/globus/globus-sdk-tokenstorage/actions/workflows/build.yaml/badge.svg
     :alt: build status
-    :target: https://travis-ci.org/sirosen/globus-sdk-tokenstorage
+    :target: https://github.com/globus/globus-sdk-tokenstorage/actions/workflows/build.yaml
 
 .. image:: https://img.shields.io/pypi/v/globus-sdk-tokenstorage.svg
     :alt: Latest Released Version
