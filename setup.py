@@ -17,17 +17,13 @@ setup(
     url="https://github.com/globus/globus-sdk-python-tokenstorage",
     packages=find_packages("src", exclude=["tests", "tests.*"]),
     package_dir={"": "src"},
-    install_requires=["globus-sdk>=1.6.1,<2"],
+    install_requires=["globus-sdk>=1.6.1,<3"],
     extras_require={
         "test": [
             # testing
             "pytest>=3.7.4,<4.0",
             "pytest-cov>=2.5.1,<3.0",
             "pytest-xdist>=1.22.5,<2.0",
-            # mock on py2, py3.4 and py3.5
-            # not just py2: py3 versions of mock don't all have the same
-            # interface!
-            'mock==2.0.0;python_version<"3.6"',
         ]
     },
     include_package_data=True,
@@ -40,11 +36,10 @@ setup(
         "Operating System :: Microsoft :: Windows",
         "Operating System :: POSIX",
         "Programming Language :: Python",
-        "Programming Language :: Python :: 2.7",
-        "Programming Language :: Python :: 3.4",
-        "Programming Language :: Python :: 3.5",
         "Programming Language :: Python :: 3.6",
         "Programming Language :: Python :: 3.7",
+        "Programming Language :: Python :: 3.8",
+        "Programming Language :: Python :: 3.9",
         "Topic :: Software Development :: Libraries :: Python Modules",
     ],
 )
