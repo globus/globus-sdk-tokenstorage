@@ -14,7 +14,7 @@ setup(
     long_description=open("README.rst").read(),
     author="Stpehen Rosen",
     author_email="sirosen@globus.org",
-    url="https://github.com/globus/globus-sdk-python-tokenstorage",
+    url="https://github.com/globus/globus-sdk-tokenstorage",
     packages=find_packages("src", exclude=["tests", "tests.*"]),
     package_dir={"": "src"},
     install_requires=["globus-sdk>=1.6.1,<3"],
