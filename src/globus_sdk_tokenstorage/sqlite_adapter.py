@@ -1,12 +1,11 @@
 import json
-import os
 import sqlite3
 
-from .abstract_base import AbstractStorageAdapter
+from .base import FileAdapter
 from .version import __version__
 
 
-class SQLiteAdapter(AbstractStorageAdapter):
+class SQLiteAdapter(FileAdapter):
     """
     :param dbname: the name of the DB file to write to and read from
     :param namespace: A "namespace" to use within the database. All operations will
@@ -29,13 +28,22 @@ class SQLiteAdapter(AbstractStorageAdapter):
     """
 
     def __init__(self, dbname, namespace="DEFAULT"):
-        self.dbname = dbname
+        self.filename = self.dbname = dbname
         self.namespace = namespace
         self._connection = self._init_and_connect()
 
+    @property
+    def _is_memory_db(self):
+        return self.dbname == ":memory:"
+
     def _init_and_connect(self):
-        init_tables = self.dbname == ":memory:" or not os.path.exists(self.dbname)
-        conn = sqlite3.connect(self.dbname)
+        init_tables = self._is_memory_db or not self.file_exists()
+        if init_tables and not self._is_memory_db:
+            with self.user_only_umask():
+                conn = sqlite3.connect(self.dbname)
+        else:
+            conn = sqlite3.connect(self.dbname)
+
         if init_tables:
             conn.executescript(
                 """

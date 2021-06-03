@@ -1,28 +1,10 @@
 import json
-import os
 
-from .abstract_base import AbstractStorageAdapter
+from .base import FileAdapter
 from .version import __version__
 
 
-class AbstractFileAdapter(AbstractStorageAdapter):
-    """
-    File adapters are for single-user cases, where we can assume that there's a
-    simple file-per-user and users are only ever attempting to read their own
-    files.
-    """
-
-    def file_exists(self):
-        """
-        Check if the file used by this file storage adapter exists.
-        """
-        return os.path.exists(self.filename)
-
-    def read_as_dict(self):
-        raise NotImplementedError
-
-
-class SimpleJSONFileAdapter(AbstractFileAdapter):
+class SimpleJSONFileAdapter(FileAdapter):
     """
     :param filename: the name of the file to write to and read from
     :param resource_server: the resource server name for tokens to look up
@@ -89,16 +71,12 @@ class SimpleJSONFileAdapter(AbstractFileAdapter):
         to_write = self._lookup_data_from_response(token_response)
 
         # deny rwx to Group and World, exec to User
-        old_umask = os.umask(0o177)
-        try:
+        with self.user_only_umask():
             # add the version as an attribute at the top level of the JSON
             # structure
             to_write["globus-sdk-tokenstorage.version"] = __version__
             with open(self.filename, "w") as f:
                 json.dump(to_write, f)
-        finally:
-            # reset umask
-            os.umask(old_umask)
 
     def read_as_dict(self):
         """
