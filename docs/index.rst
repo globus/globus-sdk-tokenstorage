@@ -62,12 +62,12 @@ Full Library Contents
 
 .. module:: globus_sdk_tokenstorage
 
-.. autoclass:: globus_sdk_tokenstorage.abstract_base.AbstractStorageAdapter
+.. autoclass:: globus_sdk_tokenstorage.base.StorageAdapter
    :members:
    :member-order: bysource
    :show-inheritance:
 
-.. autoclass:: globus_sdk_tokenstorage.file_adapters.AbstractFileAdapter
+.. autoclass:: globus_sdk_tokenstorage.base.FileAdapter
    :members:
    :member-order: bysource
    :show-inheritance:
