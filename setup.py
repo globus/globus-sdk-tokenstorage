@@ -17,7 +17,7 @@ setup(
     url="https://github.com/globus/globus-sdk-tokenstorage",
     packages=find_packages("src", exclude=["tests", "tests.*"]),
     package_dir={"": "src"},
-    install_requires=["globus-sdk>=1.6.1,<3"],
+    install_requires=["globus-sdk>=1.6.1,<4"],
     extras_require={
         "test": [
             # testing
